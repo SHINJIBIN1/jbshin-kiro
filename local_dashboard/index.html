@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>확장 가능한 Terraform 인프라 대시보드</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>확장 가능한 Terraform 인프라 대시보드</h1>
+        <div class="deployment-scale">
+            <span>현재 배포 규모:</span>
+            <span id="current-scale" class="scale-badge">불러오는 중...</span>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-button active" data-tab="summary">요약</button>
+        <button class="tab-button" data-tab="resources">리소스 현황</button>
+        <button class="tab-button" data-tab="monitoring">모니터링</button>
+        <button class="tab-button" data-tab="cost">비용 분석</button>
+    </div>
+
+    <main>
+        <!-- 요약 탭 -->
+        <section class="tab-content active" id="summary">
+            <div class="dashboard-section">
+                <h2>인프라 요약</h2>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3>배포 규모</h3>
+                        <p id="summary-scale">소규모</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>리전</h3>
+                        <p>us-west-2</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>VPC</h3>
+                        <p>10.0.0.0/16</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>도메인</h3>
+                        <p>www.jbshin.shop</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section">
+                <h2>인프라 다이어그램</h2>
+                <div class="diagram-container">
+                    <!-- Mermaid 다이어그램 -->
+                    <div class="mermaid-diagram">
+                        <pre class="mermaid">
+graph LR
+    User((사용자)) --> Route53[Route 53]
+    Route53 --> IGW[인터넷 게이트웨이]
+    IGW --> EC2[EC2 인스턴스\nt3.micro]
+    EC2 --> CloudWatch[CloudWatch 모니터링]
+    EC2 --> S3[Dashboard S3 Bucket]
+    
+    subgraph VPC [VPC 10.0.0.0/16]
+        IGW
+        subgraph PublicSubnet [Public Subnet 10.0.0.0/24]
+            EC2
+        end
+        CloudWatch
+    end
+                        </pre>
+                    </div>
+                    <!-- 이미지 다이어그램 (대체용) -->
+                    <img id="diagram-image" src="images/small_infrastructure.png" alt="소규모 인프라 다이어그램" style="display: none;">
+                </div>
+            </div>
+        </section>
+
+        <!-- 리소스 현황 탭 -->
+        <section class="tab-content" id="resources">
+            <div class="dashboard-section">
+                <h2>리소스 현황</h2>
+                <div class="resource-grid">
+                    <div class="resource-card" id="ec2-status">
+                        <h3>EC2 인스턴스</h3>
+                        <p class="resource-count">0</p>
+                        <p class="resource-status">불러오는 중...</p>
+                        <div class="resource-details">
+                            <p><strong>인스턴스 유형:</strong> t3.micro</p>
+                            <p><strong>가용 영역:</strong> us-west-2a</p>
+                            <p><strong>퍼블릭 IP:</strong> 52.25.7.71</p>
+                        </div>
+                    </div>
+                    <div class="resource-card" id="vpc-status">
+                        <h3>VPC</h3>
+                        <p class="resource-count">1</p>
+                        <p class="resource-status status-healthy">정상</p>
+                        <div class="resource-details">
+                            <p><strong>CIDR:</strong> 10.0.0.0/16</p>
+                            <p><strong>서브넷:</strong> 1 퍼블릭</p>
+                            <p><strong>인터넷 게이트웨이:</strong> 활성화</p>
+                        </div>
+                    </div>
+                    <div class="resource-card" id="route53-status">
+                        <h3>Route 53</h3>
+                        <p class="resource-count">1</p>
+                        <p class="resource-status status-healthy">정상</p>
+                        <div class="resource-details">
+                            <p><strong>도메인:</strong> www.jbshin.shop</p>
+                            <p><strong>레코드 타입:</strong> A</p>
+                            <p><strong>대상:</strong> 52.25.7.71</p>
+                        </div>
+                    </div>
+                    <div class="resource-card" id="s3-status">
+                        <h3>S3 버킷</h3>
+                        <p class="resource-count">1</p>
+                        <p class="resource-status status-healthy">정상</p>
+                        <div class="resource-details">
+                            <p><strong>이름:</strong> jbshin-terraform-dashboard-small</p>
+                            <p><strong>웹사이트:</strong> 활성화</p>
+                            <p><strong>객체:</strong> 5개</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-section">
+                <h2>보안 리소스</h2>
+                <div class="resource-grid">
+                    <div class="resource-card" id="sg-status">
+                        <h3>보안 그룹</h3>
+                        <p class="resource-count">1</p>
+                        <p class="resource-status status-healthy">정상</p>
+                        <div class="resource-details">
+                            <p><strong>이름:</strong> ec2-sg-small</p>
+                            <p><strong>인바운드:</strong> 80, 443, 22</p>
+                            <p><strong>아웃바운드:</strong> 모든 트래픽</p>
+                        </div>
+                    </div>
+                    <div class="resource-card" id="iam-status">
+                        <h3>IAM 역할</h3>
+                        <p class="resource-count">1</p>
+                        <p class="resource-status status-healthy">정상</p>
+                        <div class="resource-details">
+                            <p><strong>이름:</strong> ec2-role-small</p>
+                            <p><strong>정책:</strong> 기본, CloudWatch, S3</p>
+                            <p><strong>인스턴스 프로필:</strong> 활성화</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 모니터링 탭 -->
+        <section class="tab-content" id="monitoring">
+            <div class="dashboard-section">
+                <h2>CPU 사용률</h2>
+                <div class="chart-container">
+                    <canvas id="cpu-chart"></canvas>
+                    <p class="loading-message">CPU 사용률 데이터를 불러오는 중...</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-section">
+                <h2>메모리 사용률</h2>
+                <div class="chart-container">
+                    <canvas id="memory-chart"></canvas>
+                    <p class="loading-message">메모리 사용률 데이터를 불러오는 중...</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-section">
+                <h2>네트워크 트래픽</h2>
+                <div class="chart-container">
+                    <canvas id="network-chart"></canvas>
+                    <p class="loading-message">네트워크 트래픽 데이터를 불러오는 중...</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-section">
+                <h2>CloudWatch 경보</h2>
+                <table class="alarms-table">
+                    <thead>
+                        <tr>
+                            <th>경보 이름</th>
+                            <th>리소스</th>
+                            <th>메트릭</th>
+                            <th>임계값</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ec2-high-cpu</td>
+                            <td>EC2 인스턴스</td>
+                            <td>CPUUtilization</td>
+                            <td>> 80%</td>
+                            <td class="status-healthy">정상</td>
+                        </tr>
+                        <tr>
+                            <td>ec2-status-check</td>
+                            <td>EC2 인스턴스</td>
+                            <td>StatusCheckFailed</td>
+                            <td>> 0</td>
+                            <td class="status-healthy">정상</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 비용 분석 탭 -->
+        <section class="tab-content" id="cost">
+            <div class="dashboard-section">
+                <h2>비용 요약</h2>
+                <div class="cost-summary">
+                    <div class="cost-card">
+                        <h3>이번 달 예상 비용</h3>
+                        <p id="monthly-cost">$0.00</p>
+                    </div>
+                    <div class="cost-card">
+                        <h3>일일 평균 비용</h3>
+                        <p id="daily-cost">$0.00</p>
+                    </div>
+                    <div class="cost-card">
+                        <h3>전월 대비</h3>
+                        <p id="cost-change">0%</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-section">
+                <h2>일일 비용 추이</h2>
+                <div class="chart-container">
+                    <canvas id="cost-chart"></canvas>
+                    <p class="loading-message">비용 데이터를 불러오는 중...</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-section">
+                <h2>서비스별 비용</h2>
+                <div class="chart-container">
+                    <canvas id="service-cost-chart"></canvas>
+                    <p class="loading-message">서비스별 비용 데이터를 불러오는 중...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 확장 가능한 Terraform 인프라 대시보드 | 마지막 업데이트: <span id="last-updated">불러오는 중...</span></p>
+    </footer>
+
+    <script src="js/aws-sdk-integration.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

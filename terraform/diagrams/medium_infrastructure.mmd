@@ -1,0 +1,33 @@
+graph LR
+    User((사용자)) --> Route53[Route 53]
+    Route53 --> ALB[Application Load Balancer]
+    
+    subgraph VPC [VPC 10.0.0.0/16]
+        ALB --> ASG[Auto Scaling Group]
+        
+        subgraph "가용영역 A"
+            subgraph "프라이빗 서브넷 A"
+                EC2_A1[EC2 인스턴스 1\nt3.small]
+                EC2_A2[EC2 인스턴스 2\nt3.small]
+            end
+        end
+        
+        subgraph "가용영역 B"
+            subgraph "프라이빗 서브넷 B"
+                EC2_B1[EC2 인스턴스 3\nt3.small]
+                EC2_B2[EC2 인스턴스 4\nt3.small]
+            end
+        end
+        
+        ASG --> EC2_A1
+        ASG --> EC2_A2
+        ASG --> EC2_B1
+        ASG --> EC2_B2
+        
+        EC2_A1 --> CloudWatch[CloudWatch 모니터링]
+        EC2_A2 --> CloudWatch
+        EC2_B1 --> CloudWatch
+        EC2_B2 --> CloudWatch
+    end
+    
+    S3[Dashboard S3 Bucket]
