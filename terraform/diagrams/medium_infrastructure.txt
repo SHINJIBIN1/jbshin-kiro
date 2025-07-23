@@ -9,3 +9,4 @@ graph LR
   EC2_2 --> RDS
   EC2_1 --> CW[CloudWatch 모니터링]
   EC2_2 --> CW
+

@@ -13,7 +13,9 @@ The infrastructure is built with a modular approach, allowing for easy scaling a
 - **Security Module**: IAM roles, policies, and security groups
 - **Dashboard Module**: Web-based dashboard for infrastructure monitoring
 
-## Small Scale Infrastructure Diagram
+## Infrastructure Diagrams
+
+### Small Scale Infrastructure Diagram
 
 ```mermaid
 graph LR
@@ -30,6 +32,44 @@ graph LR
         end
         CloudWatch
     end
+```
+
+### Medium Scale Infrastructure Diagram
+
+```mermaid
+graph LR
+    User((User)) --> Route53[Route 53]
+    Route53 --> ALB[Application Load Balancer]
+    
+    subgraph VPC [VPC 10.0.0.0/16]
+        ALB --> ASG[Auto Scaling Group]
+        
+        subgraph "Availability Zone A"
+            subgraph "Private Subnet A"
+                EC2_A1[EC2 Instance 1\nt3.small]
+                EC2_A2[EC2 Instance 2\nt3.small]
+            end
+        end
+        
+        subgraph "Availability Zone B"
+            subgraph "Private Subnet B"
+                EC2_B1[EC2 Instance 3\nt3.small]
+                EC2_B2[EC2 Instance 4\nt3.small]
+            end
+        end
+        
+        ASG --> EC2_A1
+        ASG --> EC2_A2
+        ASG --> EC2_B1
+        ASG --> EC2_B2
+        
+        EC2_A1 --> CloudWatch[CloudWatch Monitoring]
+        EC2_A2 --> CloudWatch
+        EC2_B1 --> CloudWatch
+        EC2_B2 --> CloudWatch
+    end
+    
+    S3[Dashboard S3 Bucket]
 ```
 
 ## Deployment Scales
@@ -114,3 +154,5 @@ terraform destroy -var="deployment_scale=small" -var="auto_scale_enabled=false"
 ## Last Updated
 
 This README was last updated on: July 23, 2025
+> Note: The medium scale infrastructure diagram was automatically generated on 2025-07-23 13:03:41.
+

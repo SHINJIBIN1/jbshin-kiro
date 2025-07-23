@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 </head>
+
 <body>
     <header>
         <h1>확장 가능한 Terraform 인프라 대시보드</h1>
@@ -54,11 +56,16 @@
                 <div class="diagram-container">
                     <!-- Mermaid 다이어그램 -->
                     <div class="mermaid-diagram">
-                        <pre class="mermaid">
+                        <div class="scale-selector">
+                            <button class="scale-button active" data-scale="small">소규모</button>
+                            <button class="scale-button" data-scale="medium">중규모</button>
+                            <button class="scale-button" data-scale="large">대규모</button>
+                        </div>
+                        <pre class="mermaid" id="small-diagram" style="display: block;">
 graph LR
     User((사용자)) --> Route53[Route 53]
     Route53 --> IGW[인터넷 게이트웨이]
-    IGW --> EC2[EC2 인스턴스\nt3.micro]
+    IGW --> EC2[EC2 인스턴스]
     EC2 --> CloudWatch[CloudWatch 모니터링]
     EC2 --> S3[Dashboard S3 Bucket]
     
@@ -70,9 +77,45 @@ graph LR
         CloudWatch
     end
                         </pre>
+                        <pre class="mermaid" id="medium-diagram" style="display: none;">
+graph LR
+    User((사용자)) --> Route53[Route 53]
+    Route53 --> ALB[Application Load Balancer]
+    
+    subgraph VPC [VPC 10.0.0.0/16]
+        ALB --> ASG[Auto Scaling Group]
+        
+        subgraph "가용영역 A"
+            subgraph "프라이빗 서브넷 A"
+                EC2_A1[EC2 인스턴스 1]
+                EC2_A2[EC2 인스턴스 2]
+            end
+        end
+        
+        subgraph "가용영역 B"
+            subgraph "프라이빗 서브넷 B"
+                EC2_B1[EC2 인스턴스 3]
+                EC2_B2[EC2 인스턴스 4]
+            end
+        end
+        
+        ASG --> EC2_A1
+        ASG --> EC2_A2
+        ASG --> EC2_B1
+        ASG --> EC2_B2
+        
+        EC2_A1 --> CloudWatch[CloudWatch 모니터링]
+        EC2_A2 --> CloudWatch
+        EC2_B1 --> CloudWatch
+        EC2_B2 --> CloudWatch
+    end
+    
+    S3[Dashboard S3 Bucket]
+                        </pre>
                     </div>
                     <!-- 이미지 다이어그램 (대체용) -->
-                    <img id="diagram-image" src="images/small_infrastructure.png" alt="소규모 인프라 다이어그램" style="display: none;">
+                    <img id="diagram-image" src="images/small_infrastructure.png" alt="소규모 인프라 다이어그램"
+                        style="display: none;">
                 </div>
             </div>
         </section>
@@ -124,7 +167,7 @@ graph LR
                     </div>
                 </div>
             </div>
-            
+
             <div class="dashboard-section">
                 <h2>보안 리소스</h2>
                 <div class="resource-grid">
@@ -161,7 +204,7 @@ graph LR
                     <p class="loading-message">CPU 사용률 데이터를 불러오는 중...</p>
                 </div>
             </div>
-            
+
             <div class="dashboard-section">
                 <h2>메모리 사용률</h2>
                 <div class="chart-container">
@@ -169,7 +212,7 @@ graph LR
                     <p class="loading-message">메모리 사용률 데이터를 불러오는 중...</p>
                 </div>
             </div>
-            
+
             <div class="dashboard-section">
                 <h2>네트워크 트래픽</h2>
                 <div class="chart-container">
@@ -177,7 +220,7 @@ graph LR
                     <p class="loading-message">네트워크 트래픽 데이터를 불러오는 중...</p>
                 </div>
             </div>
-            
+
             <div class="dashboard-section">
                 <h2>CloudWatch 경보</h2>
                 <table class="alarms-table">
@@ -229,7 +272,7 @@ graph LR
                     </div>
                 </div>
             </div>
-            
+
             <div class="dashboard-section">
                 <h2>일일 비용 추이</h2>
                 <div class="chart-container">
@@ -237,7 +280,7 @@ graph LR
                     <p class="loading-message">비용 데이터를 불러오는 중...</p>
                 </div>
             </div>
-            
+
             <div class="dashboard-section">
                 <h2>서비스별 비용</h2>
                 <div class="chart-container">
@@ -255,4 +298,5 @@ graph LR
     <script src="js/aws-sdk-integration.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
+
 </html>
