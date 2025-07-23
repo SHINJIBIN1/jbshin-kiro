@@ -1,0 +1,6 @@
+graph LR
+  User((사용자)) --> R53[Route 53]
+  R53 --> IG[인터넷 게이트웨이]
+  IG --> EC2[EC2 인스턴스]
+  EC2 --> RDS[RDS 단일 인스턴스]
+  EC2 --> CW[CloudWatch 모니터링]

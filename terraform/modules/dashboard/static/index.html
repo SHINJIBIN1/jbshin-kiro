@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>확장 가능한 Terraform 인프라 대시보드</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>확장 가능한 Terraform 인프라 대시보드</h1>
+        <div class="deployment-scale">
+            <span>현재 배포 규모:</span>
+            <span id="current-scale" class="scale-badge">불러오는 중...</span>
+        </div>
+    </header>
+
+    <main>
+        <section class="dashboard-section" id="infrastructure-diagram">
+            <h2>인프라 다이어그램</h2>
+            <div class="diagram-container">
+                <img id="diagram-image" src="images/placeholder-diagram.png" alt="인프라 다이어그램">
+                <p class="loading-message">다이어그램을 불러오는 중...</p>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="cost-analysis">
+            <h2>비용 분석</h2>
+            <div class="chart-container">
+                <canvas id="cost-chart"></canvas>
+                <p class="loading-message">비용 데이터를 불러오는 중...</p>
+            </div>
+            <div class="cost-summary">
+                <div class="cost-card">
+                    <h3>이번 달 예상 비용</h3>
+                    <p id="monthly-cost">$0.00</p>
+                </div>
+                <div class="cost-card">
+                    <h3>일일 평균 비용</h3>
+                    <p id="daily-cost">$0.00</p>
+                </div>
+                <div class="cost-card">
+                    <h3>전월 대비</h3>
+                    <p id="cost-change">0%</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="resource-status">
+            <h2>리소스 현황</h2>
+            <div class="resource-grid">
+                <div class="resource-card" id="ec2-status">
+                    <h3>EC2 인스턴스</h3>
+                    <p class="resource-count">0</p>
+                    <p class="resource-status">불러오는 중...</p>
+                </div>
+                <div class="resource-card" id="rds-status">
+                    <h3>RDS 인스턴스</h3>
+                    <p class="resource-count">0</p>
+                    <p class="resource-status">불러오는 중...</p>
+                </div>
+                <div class="resource-card" id="elb-status">
+                    <h3>로드 밸런서</h3>
+                    <p class="resource-count">0</p>
+                    <p class="resource-status">불러오는 중...</p>
+                </div>
+                <div class="resource-card" id="cache-status">
+                    <h3>ElastiCache</h3>
+                    <p class="resource-count">0</p>
+                    <p class="resource-status">불러오는 중...</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-section" id="monitoring">
+            <h2>모니터링</h2>
+            <div class="chart-container">
+                <canvas id="cpu-chart"></canvas>
+                <p class="loading-message">CPU 사용률 데이터를 불러오는 중...</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="memory-chart"></canvas>
+                <p class="loading-message">메모리 사용률 데이터를 불러오는 중...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 확장 가능한 Terraform 인프라 대시보드 | 마지막 업데이트: <span id="last-updated">불러오는 중...</span></p>
+    </footer>
+
+    <script src="js/aws-sdk-integration.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

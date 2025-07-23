@@ -1,0 +1,52 @@
+# Scalable Terraform Infrastructure
+
+This project implements a scalable web application infrastructure using Terraform. It supports three deployment scales:
+- Small (10 users or less)
+- Medium (100+ users)
+- Large (1000+ users)
+
+## Project Structure
+
+```
+terraform/
+├── environments/       # Environment-specific configurations
+├── modules/            # Reusable Terraform modules
+├── provider.tf         # AWS provider configuration
+├── variables.tf        # Input variables
+├── outputs.tf          # Output values
+└── versions.tf         # Terraform and provider versions, backend config
+```
+
+## Prerequisites
+
+- Terraform >= 1.0.0
+- AWS CLI configured with appropriate credentials
+- S3 bucket `jbshin-kiro-terraform-state` for remote state storage
+- DynamoDB table `terraform-state-lock` for state locking
+
+## Usage
+
+1. Initialize Terraform:
+   ```
+   terraform init
+   ```
+
+2. Select deployment scale:
+   ```
+   terraform plan -var="deployment_scale=small"
+   ```
+   Available options: `small`, `medium`, `large`
+
+3. Apply the configuration:
+   ```
+   terraform apply -var="deployment_scale=small"
+   ```
+
+## Remote State Management
+
+This project uses an S3 backend for remote state management with DynamoDB for state locking.
+
+## GitHub Repository
+
+All infrastructure code is version-controlled in the GitHub repository:
+https://github.com/SHINJIBIN1/jbshin-kiro

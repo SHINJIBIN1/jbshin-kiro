@@ -1,0 +1,211 @@
+/* 기본 스타일 */
+:root {
+    --primary-color: #0073bb;
+    --secondary-color: #ff9900;
+    --background-color: #f5f5f5;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    padding: 20px;
+}
+
+/* 헤더 스타일 */
+header {
+    background-color: var(--card-background);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 24px;
+}
+
+.deployment-scale {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scale-badge {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+/* 메인 콘텐츠 스타일 */
+main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.dashboard-section {
+    background-color: var(--card-background);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+/* 다이어그램 스타일 */
+.diagram-container {
+    position: relative;
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.diagram-container img {
+    max-width: 100%;
+    max-height: 500px;
+}
+
+/* 차트 스타일 */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+/* 비용 요약 스타일 */
+.cost-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.cost-card {
+    background-color: var(--background-color);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.cost-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.cost-card p {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* 리소스 그리드 스타일 */
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.resource-card {
+    background-color: var(--background-color);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.resource-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.resource-count {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.resource-status {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.status-healthy {
+    color: var(--success-color);
+}
+
+.status-warning {
+    color: var(--warning-color);
+}
+
+.status-error {
+    color: var(--danger-color);
+}
+
+/* 로딩 메시지 스타일 */
+.loading-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-color);
+    font-style: italic;
+}
+
+/* 푸터 스타일 */
+footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+    main {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    #infrastructure-diagram {
+        grid-column: span 2;
+    }
+}
+
+@media (min-width: 1200px) {
+    main {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    #infrastructure-diagram {
+        grid-column: span 3;
+    }
+    
+    #cost-analysis, #resource-status {
+        grid-column: span 2;
+    }
+}
