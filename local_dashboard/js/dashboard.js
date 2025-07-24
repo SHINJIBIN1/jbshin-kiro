@@ -11,11 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // 탭 기능 초기화
     initializeTabs();
     
-    // 다이어그램 선택 기능 초기화
+    // 다이어그램 탭 기능 초기화
     initializeDiagramSelector();
     
     // 현재 시간 설정
     updateLastUpdated();
+    
+    // 배포 규모 업데이트 (중규모로 고정)
+    updateDeploymentScale('medium');
     
     // AWS SDK 통합 시도
     if (typeof initializeAwsDashboard === 'function') {
@@ -78,33 +81,33 @@ function initializeTabs() {
     tabButtons[0].classList.add('active');
 }
 
-// 다이어그램 선택 기능 초기화
+// 다이어그램 탭 기능 초기화
 function initializeDiagramSelector() {
-    const scaleButtons = document.querySelectorAll('.scale-button');
-    if (!scaleButtons.length) return;
+    const diagramTabButtons = document.querySelectorAll('.diagram-tab-button');
+    if (!diagramTabButtons.length) return;
     
-    scaleButtons.forEach(button => {
+    diagramTabButtons.forEach(button => {
         button.addEventListener('click', () => {
             // 모든 버튼에서 active 클래스 제거
-            scaleButtons.forEach(btn => btn.classList.remove('active'));
+            diagramTabButtons.forEach(btn => btn.classList.remove('active'));
             
-            // 모든 다이어그램 숨기기
-            document.querySelectorAll('.mermaid-diagram pre.mermaid').forEach(diagram => {
-                diagram.style.display = 'none';
+            // 모든 다이어그램 콘텐츠 숨기기
+            document.querySelectorAll('.diagram-content').forEach(content => {
+                content.classList.remove('active');
             });
             
             // 클릭한 버튼에 active 클래스 추가
             button.classList.add('active');
             
-            // 해당 다이어그램 표시
-            const scale = button.getAttribute('data-scale');
-            const diagram = document.getElementById(`${scale}-diagram`);
-            if (diagram) {
-                diagram.style.display = 'block';
+            // 해당 다이어그램 콘텐츠 표시
+            const diagramType = button.getAttribute('data-diagram');
+            const diagramContent = document.getElementById(`${diagramType}-diagram-content`);
+            if (diagramContent) {
+                diagramContent.classList.add('active');
             }
             
-            // 배포 규모 업데이트
-            updateDeploymentScale(scale);
+            // Mermaid 다이어그램 다시 렌더링
+            mermaid.init(undefined, document.querySelectorAll('.diagram-content.active .mermaid'));
         });
     });
 }
@@ -457,8 +460,8 @@ function initializeMonitoringCharts() {
 
 // 모의 데이터로 대시보드 업데이트 (AWS SDK 통합 전 임시 구현)
 function updateDashboardWithMockData() {
-    // 배포 규모 설정
-    const scale = '소규모';
+    // 배포 규모 설정 (중규모로 고정)
+    const scale = '중규모';
     const currentScaleElement = document.getElementById('current-scale');
     if (currentScaleElement) currentScaleElement.textContent = scale;
     
@@ -475,8 +478,13 @@ function updateDashboardWithMockData() {
     const costChangeElement = document.getElementById('cost-change');
     if (costChangeElement) costChangeElement.textContent = (Math.random() * 20 - 10).toFixed(1) + '%';
     
-    // 리소스 상태 업데이트
-    updateResourceCard('ec2-status', 1); // 소규모는 EC2 인스턴스 1개
+    // 리소스 상태 업데이트 (중규모 리소스로 설정)
+    updateResourceCard('ec2-status', 4); // 중규모는 EC2 인스턴스 4개
+    updateResourceCard('vpc-status', 1);
+    updateResourceCard('route53-status', 1);
+    updateResourceCard('s3-status', 1);
+    updateResourceCard('sg-status', 2);
+    updateResourceCard('iam-status', 2);
 }
 
 // 리소스 카드 업데이트
@@ -503,7 +511,7 @@ function updateResourceCard(cardId, count) {
 
 // Mermaid 다이어그램 업데이트 함수
 function updateMermaidDiagram(code) {
-    const diagramContainer = document.querySelector('.mermaid-diagram');
+    const diagramContainer = document.querySelector('.diagram-content.active');
     if (!diagramContainer) return;
     
     // 기존 다이어그램 제거

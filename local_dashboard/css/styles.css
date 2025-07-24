@@ -147,6 +147,7 @@ main {
     position: relative;
     min-height: 300px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -156,20 +157,14 @@ main {
     max-height: 500px;
 }
 
-.mermaid-diagram {
-    width: 100%;
-    overflow: auto;
-}
-
-/* 다이어그램 스케일 선택 버튼 */
-.scale-selector {
+.diagram-tabs {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
     gap: 10px;
 }
 
-.scale-button {
+.diagram-tab-button {
     padding: 8px 16px;
     border: 1px solid var(--border-color);
     background-color: var(--background-color);
@@ -179,14 +174,54 @@ main {
     transition: all 0.3s ease;
 }
 
-.scale-button:hover {
+.diagram-tab-button:hover {
     background-color: rgba(0, 115, 187, 0.1);
 }
 
-.scale-button.active {
+.diagram-tab-button.active {
     background-color: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
+}
+
+.diagram-content {
+    display: none;
+    width: 100%;
+}
+
+.diagram-content.active {
+    display: block;
+}
+
+.mermaid-diagram {
+    width: 100%;
+    overflow: auto;
+}
+
+/* 트래픽 다이어그램 범례 */
+.legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 20px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.legend-label {
+    font-size: 14px;
 }
 
 /* 차트 스타일 */
