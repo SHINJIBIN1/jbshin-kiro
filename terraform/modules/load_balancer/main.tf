@@ -36,6 +36,15 @@ resource "aws_security_group" "alb" {
     description = "Allow HTTP traffic"
   }
 
+  # Allow HTTP traffic on port 8080
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTP traffic on port 8080"
+  }
+
   # Allow HTTPS traffic if enabled
   dynamic "ingress" {
     for_each = var.enable_https ? [1] : []
@@ -146,6 +155,19 @@ resource "aws_lb_listener" "http" {
       type             = "forward"
       target_group_arn = aws_lb_target_group.main[0].arn
     }
+  }
+}
+
+# HTTP listener for ALB on port 8080
+resource "aws_lb_listener" "http_8080" {
+  count             = local.create_alb ? 1 : 0
+  load_balancer_arn = aws_lb.main[0].arn
+  port              = 8080
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main[0].arn
   }
 }
 
