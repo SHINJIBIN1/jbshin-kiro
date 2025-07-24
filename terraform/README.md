@@ -15,26 +15,9 @@ The infrastructure is built with a modular approach, allowing for easy scaling a
 
 ## Infrastructure Diagrams
 
-### Small Scale Infrastructure Diagram
+## Infrastructure Diagram
 
-```mermaid
-graph LR
-    User((User)) --> Route53[Route 53]
-    Route53 --> IGW[Internet Gateway]
-    IGW --> EC2[EC2 Instance\nt3.micro]
-    EC2 --> CloudWatch[CloudWatch Monitoring]
-    EC2 --> S3[Dashboard S3 Bucket]
-    
-    subgraph VPC [VPC 10.0.0.0/16]
-        IGW
-        subgraph PublicSubnet [Public Subnet 10.0.0.0/24]
-            EC2
-        end
-        CloudWatch
-    end
-```
-
-### Medium Scale Infrastructure Diagram
+### Current Infrastructure (Medium Scale)
 
 ```mermaid
 graph LR
@@ -46,15 +29,15 @@ graph LR
         
         subgraph "Availability Zone A"
             subgraph "Private Subnet A"
-                EC2_A1[EC2 Instance 1\nt3.small]
-                EC2_A2[EC2 Instance 2\nt3.small]
+                EC2_A1[EC2 Instance 1]
+                EC2_A2[EC2 Instance 2]
             end
         end
         
         subgraph "Availability Zone B"
             subgraph "Private Subnet B"
-                EC2_B1[EC2 Instance 3\nt3.small]
-                EC2_B2[EC2 Instance 4\nt3.small]
+                EC2_B1[EC2 Instance 3]
+                EC2_B2[EC2 Instance 4]
             end
         end
         
@@ -71,6 +54,13 @@ graph LR
     
     S3[Dashboard S3 Bucket]
 ```
+
+## Deployment History
+
+| Date | Scale | Description |
+|------|-------|-------------|
+| 2025-07-23 11:50 | Small | Initial deployment with single EC2 instance |
+| 2025-07-23 13:03 | Medium | Upgraded to medium scale with ALB and Auto Scaling Group |
 
 ## Deployment Scales
 
