@@ -15,44 +15,84 @@ The infrastructure is built with a modular approach, allowing for easy scaling a
 
 ## Infrastructure Diagrams
 
-## Infrastructure Diagram
-
 ### Current Infrastructure (Medium Scale)
 
 ```mermaid
-graph LR
-    User((User)) --> Route53[Route 53]
-    Route53 --> ALB[Application Load Balancer]
+graph TB
+    User((User)) --> Route53[Route 53<br/>www.jbshin.shop]
+    Route53 --> IGW[Internet Gateway]
     
     subgraph VPC [VPC 10.0.0.0/16]
-        ALB --> ASG[Auto Scaling Group]
+        IGW --> ALB[Application Load Balancer<br/>Ports: 80, 443, 8080]
         
-        subgraph "Availability Zone A"
-            subgraph "Private Subnet A"
+        subgraph "Public Subnets"
+            PubSub1[Public Subnet AZ-A<br/>10.0.0.0/24]
+            PubSub2[Public Subnet AZ-B<br/>10.0.1.0/24]
+        end
+        
+        ALB -.-> PubSub1
+        ALB -.-> PubSub2
+        
+        subgraph "Private Subnets"
+            subgraph "Availability Zone A"
+                PrivSub1[Private Subnet A<br/>10.0.2.0/24]
                 EC2_A1[EC2 Instance 1]
                 EC2_A2[EC2 Instance 2]
             end
-        end
-        
-        subgraph "Availability Zone B"
-            subgraph "Private Subnet B"
+            
+            subgraph "Availability Zone B"
+                PrivSub2[Private Subnet B<br/>10.0.3.0/24]
                 EC2_B1[EC2 Instance 3]
                 EC2_B2[EC2 Instance 4]
             end
         end
+        
+        ALB --> TG[Target Group<br/>Health Check: HTTP:80/]
+        TG --> ASG[Auto Scaling Group<br/>Min: 2, Max: 4, Desired: 2]
         
         ASG --> EC2_A1
         ASG --> EC2_A2
         ASG --> EC2_B1
         ASG --> EC2_B2
         
-        EC2_A1 --> CloudWatch[CloudWatch Monitoring]
+        PrivSub1 --> NAT[NAT Gateway]
+        PrivSub2 --> NAT
+        NAT --> IGW
+        
+        EC2_A1 --> CloudWatch[CloudWatch Monitoring<br/>CPU & Request Metrics]
         EC2_A2 --> CloudWatch
         EC2_B1 --> CloudWatch
         EC2_B2 --> CloudWatch
+        
+        subgraph "Security Groups"
+            ALBSG[ALB Security Group<br/>Ingress: 80, 443, 8080<br/>Egress: All]
+            EC2SG[EC2 Security Group<br/>Ingress: 80, 443, 22<br/>Egress: All]
+        end
+        
+        ALB -.-> ALBSG
+        EC2_A1 -.-> EC2SG
+        EC2_A2 -.-> EC2SG
+        EC2_B1 -.-> EC2SG
+        EC2_B2 -.-> EC2SG
     end
     
-    S3[Dashboard S3 Bucket]
+    subgraph "External Services"
+        S3[Dashboard S3 Bucket<br/>Static Website Hosting]
+        IAM[IAM Roles & Policies<br/>EC2 Instance Profile]
+    end
+    
+    EC2_A1 -.-> IAM
+    EC2_A2 -.-> IAM
+    EC2_B1 -.-> IAM
+    EC2_B2 -.-> IAM
+    
+    style User fill:#e1f5fe
+    style Route53 fill:#fff3e0
+    style ALB fill:#f3e5f5
+    style ASG fill:#e8f5e8
+    style CloudWatch fill:#fff8e1
+    style S3 fill:#fce4ec
+    style IAM fill:#f1f8e9
 ```
 
 ## Deployment History
@@ -61,6 +101,7 @@ graph LR
 |------|-------|-------------|
 | 2025-07-23 11:50 | Small | Initial deployment with single EC2 instance |
 | 2025-07-23 13:03 | Medium | Upgraded to medium scale with ALB and Auto Scaling Group |
+| 2025-07-25 | Medium | Enhanced ALB with port 8080 support for multi-port applications |
 
 ## Deployment Scales
 
@@ -143,6 +184,6 @@ terraform destroy -var="deployment_scale=small" -var="auto_scale_enabled=false"
 
 ## Last Updated
 
-This README was last updated on: July 23, 2025
-> Note: The medium scale infrastructure diagram was automatically generated on 2025-07-23 13:03:41.
+This README was last updated on: July 25, 2025
+> Note: The medium scale infrastructure diagram was automatically updated on 2025-07-25 to reflect port 8080 support in the Application Load Balancer.
 
